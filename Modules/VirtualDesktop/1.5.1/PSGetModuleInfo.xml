@@ -1,0 +1,196 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">VirtualDesktop</S>
+      <Version N="Version">1.5.1</Version>
+      <S N="Type">Module</S>
+      <S N="Description">VirtualDesktop is a module that provides commandlets to manage virtual desktops of Windows 10 and 11._x000D__x000A__x000D__x000A_* New-Desktop, Switch-Desktop, Remove-Desktop to control desktops_x000D__x000A_* Get-DesktopCount, Get-CurrentDesktop, Get-Desktop and others to query desktops_x000D__x000A_* Move-Window, (Un)Pin-Window, (Un)Pin-Application to control windows on desktops_x000D__x000A_* only Windows 10 2004 and up: Get-DesktopName and Set-DesktopName_x000D__x000A_* only Windows 11: Move-Desktop, Remove-AllDesktops, Set-DesktopWallpaper and Set-AllDesktopWallpapers_x000D__x000A_and other commandlets</S>
+      <S N="Author">Markus Scholtes</S>
+      <S N="CompanyName">MScholtes</S>
+      <S N="Copyright">(c) Markus Scholtes 2022</S>
+      <DT N="PublishedDate">2022-07-30T05:46:28-04:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2023-02-11T02:31:09.8799743-05:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://github.com/MScholtes/PSVirtualDesktop/blob/master/LICENSE</URI>
+      <URI N="ProjectUri">https://github.com/MScholtes/PSVirtualDesktop</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>Windows</S>
+          <S>Desktop</S>
+          <S>Virtualdesktop</S>
+          <S>Window</S>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Workflow</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Get-DesktopCount</S>
+                <S>Get-DesktopList</S>
+                <S>New-Desktop</S>
+                <S>Switch-Desktop</S>
+                <S>Remove-Desktop</S>
+                <S>Remove-AllDesktops</S>
+                <S>Get-CurrentDesktop</S>
+                <S>Get-Desktop</S>
+                <S>Get-DesktopIndex</S>
+                <S>Get-DesktopName</S>
+                <S>Set-DesktopName</S>
+                <S>Set-DesktopWallpaper</S>
+                <S>Set-AllDesktopWallpapers</S>
+                <S>Get-DesktopFromWindow</S>
+                <S>Test-CurrentDesktop</S>
+                <S>Get-LeftDesktop</S>
+                <S>Get-RightDesktop</S>
+                <S>Move-Desktop</S>
+                <S>Move-Window</S>
+                <S>Move-ActiveWindow</S>
+                <S>Test-Window</S>
+                <S>Pin-Window</S>
+                <S>Unpin-Window</S>
+                <S>Test-WindowPinned</S>
+                <S>Pin-Application</S>
+                <S>Unpin-Application</S>
+                <S>Test-ApplicationPinned</S>
+                <S>Get-ConsoleHandle</S>
+                <S>Get-ActiveWindowHandle</S>
+                <S>Find-WindowHandle</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Get-DesktopCount</S>
+                <S>Get-DesktopList</S>
+                <S>New-Desktop</S>
+                <S>Switch-Desktop</S>
+                <S>Remove-Desktop</S>
+                <S>Remove-AllDesktops</S>
+                <S>Get-CurrentDesktop</S>
+                <S>Get-Desktop</S>
+                <S>Get-DesktopIndex</S>
+                <S>Get-DesktopName</S>
+                <S>Set-DesktopName</S>
+                <S>Set-DesktopWallpaper</S>
+                <S>Set-AllDesktopWallpapers</S>
+                <S>Get-DesktopFromWindow</S>
+                <S>Test-CurrentDesktop</S>
+                <S>Get-LeftDesktop</S>
+                <S>Get-RightDesktop</S>
+                <S>Move-Desktop</S>
+                <S>Move-Window</S>
+                <S>Move-ActiveWindow</S>
+                <S>Test-Window</S>
+                <S>Pin-Window</S>
+                <S>Unpin-Window</S>
+                <S>Test-WindowPinned</S>
+                <S>Pin-Application</S>
+                <S>Unpin-Application</S>
+                <S>Test-ApplicationPinned</S>
+                <S>Get-ConsoleHandle</S>
+                <S>Get-ActiveWindowHandle</S>
+                <S>Find-WindowHandle</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="5" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes"># 1.5.1 / 2022-07-29_x000D__x000A_- bug fix: desktop for pinned windows and apps are recognized_x000D__x000A_# 1.5.0 / 2022-03-16_x000D__x000A_- support for Powershell Core_x000D__x000A_- support for Windows Server 2022_x000D__x000A_- support for Windows Terminal_x000D__x000A_# 1.4.1 / 2021-11-27_x000D__x000A_- support for Windows 11 Insider build 22449 and up_x000D__x000A_- version 1.3.2 should have been 1.4.0, so this is 1.4.1_x000D__x000A_# 1.3.2 / 2021-10-22_x000D__x000A_- support for Windows 10 21H2 and Windows 11_x000D__x000A_- Set-DesktopName works on current virtual desktop if parameter -desktop is missing_x000D__x000A_# 1.3.1 / 2021-02-28_x000D__x000A_- fixes for Get-DesktopIndex_x000D__x000A_# 1.3.0 / 2020-11-28_x000D__x000A_- compatible to Powershell Core 7.0 (but not 7.1 or up)_x000D__x000A_- parameter -PassThru for Set-DesktopName (by sirAndros)_x000D__x000A_# 1.2.0 / 2020-06-27_x000D__x000A_- support for desktop names introduced with Win 10 2004_x000D__x000A_- new functions Get-DesktopList, Get-DesktopName and Set-DesktopName_x000D__x000A_- desktop name as parameter for many functions_x000D__x000A_- support for verbose output_x000D__x000A_# 1.1.0 / 2019-09-04_x000D__x000A_- new function Find-WindowHandle_x000D__x000A_# 1.0.1 / 2019-08-22_x000D__x000A_- Fixed examples_x000D__x000A_# 1.0.0 / 2019-06-03_x000D__x000A_- First stable release (hope so)</S>
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="2" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="9">
+        <TN RefId="4">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) Markus Scholtes 2022</S>
+          <S N="description">VirtualDesktop is a module that provides commandlets to manage virtual desktops of Windows 10 and 11._x000D__x000A__x000D__x000A_* New-Desktop, Switch-Desktop, Remove-Desktop to control desktops_x000D__x000A_* Get-DesktopCount, Get-CurrentDesktop, Get-Desktop and others to query desktops_x000D__x000A_* Move-Window, (Un)Pin-Window, (Un)Pin-Application to control windows on desktops_x000D__x000A_* only Windows 10 2004 and up: Get-DesktopName and Set-DesktopName_x000D__x000A_* only Windows 11: Move-Desktop, Remove-AllDesktops, Set-DesktopWallpaper and Set-AllDesktopWallpapers_x000D__x000A_and other commandlets</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes"># 1.5.1 / 2022-07-29_x000D__x000A_- bug fix: desktop for pinned windows and apps are recognized_x000D__x000A_# 1.5.0 / 2022-03-16_x000D__x000A_- support for Powershell Core_x000D__x000A_- support for Windows Server 2022_x000D__x000A_- support for Windows Terminal_x000D__x000A_# 1.4.1 / 2021-11-27_x000D__x000A_- support for Windows 11 Insider build 22449 and up_x000D__x000A_- version 1.3.2 should have been 1.4.0, so this is 1.4.1_x000D__x000A_# 1.3.2 / 2021-10-22_x000D__x000A_- support for Windows 10 21H2 and Windows 11_x000D__x000A_- Set-DesktopName works on current virtual desktop if parameter -desktop is missing_x000D__x000A_# 1.3.1 / 2021-02-28_x000D__x000A_- fixes for Get-DesktopIndex_x000D__x000A_# 1.3.0 / 2020-11-28_x000D__x000A_- compatible to Powershell Core 7.0 (but not 7.1 or up)_x000D__x000A_- parameter -PassThru for Set-DesktopName (by sirAndros)_x000D__x000A_# 1.2.0 / 2020-06-27_x000D__x000A_- support for desktop names introduced with Win 10 2004_x000D__x000A_- new functions Get-DesktopList, Get-DesktopName and Set-DesktopName_x000D__x000A_- desktop name as parameter for many functions_x000D__x000A_- support for verbose output_x000D__x000A_# 1.1.0 / 2019-09-04_x000D__x000A_- new function Find-WindowHandle_x000D__x000A_# 1.0.1 / 2019-08-22_x000D__x000A_- Fixed examples_x000D__x000A_# 1.0.0 / 2019-06-03_x000D__x000A_- First stable release (hope so)</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">1756</S>
+          <S N="downloadCount">7782</S>
+          <S N="packageSize">20194</S>
+          <S N="published">7/30/2022 5:46:28 AM -04:00</S>
+          <S N="created">7/30/2022 5:46:28 AM -04:00</S>
+          <S N="lastUpdated">2/10/2023 8:22:29 PM -05:00</S>
+          <S N="tags">Windows Desktop Virtualdesktop Window PSModule PSFunction_Get-DesktopCount PSCommand_Get-DesktopCount PSFunction_Get-DesktopList PSCommand_Get-DesktopList PSFunction_New-Desktop PSCommand_New-Desktop PSFunction_Switch-Desktop PSCommand_Switch-Desktop PSFunction_Remove-Desktop PSCommand_Remove-Desktop PSFunction_Remove-AllDesktops PSCommand_Remove-AllDesktops PSFunction_Get-CurrentDesktop PSCommand_Get-CurrentDesktop PSFunction_Get-Desktop PSCommand_Get-Desktop PSFunction_Get-DesktopIndex PSCommand_Get-DesktopIndex PSFunction_Get-DesktopName PSCommand_Get-DesktopName PSFunction_Set-DesktopName PSCommand_Set-DesktopName PSFunction_Set-DesktopWallpaper PSCommand_Set-DesktopWallpaper PSFunction_Set-AllDesktopWallpapers PSCommand_Set-AllDesktopWallpapers PSFunction_Get-DesktopFromWindow PSCommand_Get-DesktopFromWindow PSFunction_Test-CurrentDesktop PSCommand_Test-CurrentDesktop PSFunction_Get-LeftDesktop PSCommand_Get-LeftDesktop PSFunction_Get-RightDesktop PSCommand_Get-RightDesktop PSFunction_Move-Desktop PSCommand_Move-Desktop PSFunction_Move-Window PSCommand_Move-Window PSFunction_Move-ActiveWindow PSCommand_Move-ActiveWindow PSFunction_Test-Window PSCommand_Test-Window PSFunction_Pin-Window PSCommand_Pin-Window PSFunction_Unpin-Window PSCommand_Unpin-Window PSFunction_Test-WindowPinned PSCommand_Test-WindowPinned PSFunction_Pin-Application PSCommand_Pin-Application PSFunction_Unpin-Application PSCommand_Unpin-Application PSFunction_Test-ApplicationPinned PSCommand_Test-ApplicationPinned PSFunction_Get-ConsoleHandle PSCommand_Get-ConsoleHandle PSFunction_Get-ActiveWindowHandle PSCommand_Get-ActiveWindowHandle PSFunction_Find-WindowHandle PSCommand_Find-WindowHandle PSIncludes_Function</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2023-02-10T20:22:29Z</S>
+          <S N="NormalizedVersion">1.5.1</S>
+          <S N="Authors">Markus Scholtes</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">VirtualDesktop.nuspec|functions.cat|VirtualDesktop.psd1|VirtualDesktop.ps1|VirtualDesktop.psm1</S>
+          <S N="GUID">ff25bfed-b11c-4280-9ded-bee5870696d6</S>
+          <S N="PowerShellVersion">5.1</S>
+          <S N="DotNetFrameworkVersion">4.5</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">C:\Users\will\Documents\PowerShell\Modules\VirtualDesktop\1.5.1</S>
+    </MS>
+  </Obj>
+</Objs>
