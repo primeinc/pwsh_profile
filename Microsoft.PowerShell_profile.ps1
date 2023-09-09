@@ -128,7 +128,7 @@ function Start-TrainingWebServer {
         [int]$port = 8000
     )
     $processName = "python"
-    $webServerProcess = Get-Process -Name $processName -ErrorAction SilentlyContinue | Where-Object {$_.MainWindowTitle -match "http.server"}
+    $webServerProcess = Get-Process -Name $processName -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -match "http.server" }
     if ($null -ne $webServerProcess) {
         $webServerProcess | Stop-Process -Force
     }
@@ -140,16 +140,16 @@ function Start-TrainingWebServer {
 
 # Activate Python Virtual Environment
 function venv {
-    Get-ChildItem activate.ps1 -Recurse -Depth 2 | ForEach-Object{$_.FullName} | Invoke-Expression
+    Get-ChildItem activate.ps1 -Recurse -Depth 2 | ForEach-Object { $_.FullName } | Invoke-Expression
 }
 
 # Filter Numbers by Prefix
 function FilterNumbersByPrefix {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string[]] $NumberList,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string] $Prefix
     )
 
