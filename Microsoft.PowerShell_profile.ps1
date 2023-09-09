@@ -1,18 +1,23 @@
-# Set-Alias: Creates a new alias that launches Visual Studio Code
+# ====================================
+# Aliases
+# ====================================
+
+# Visual Studio Code Aliases
 Set-Alias vs "C:\Users\will\AppData\Local\Programs\Microsoft VS Code\Code.exe"
 Set-Alias vc vs
 Set-Alias vscode vs
+
+# Other Aliases
 New-Alias which Get-Command
-# New-Alias python310 "C:\Users\will\AppData\Local\Programs\Python\Python310\python.exe"
-# New-Alias python37 "C:\Users\will\AppData\Local\Programs\Python\Python37\python.exe"
-# New-Alias python39 "C:\Users\will\AppData\Local\Programs\Python\Python39\python.exe"
-# New-Alias python3913 "C:\Users\will\AppData\Local\Programs\Python\Python39\python.exe"
-
 New-Alias cz chezmoi
+Set-Alias -Name nslookup -Value dnslookup
+New-Alias tws Start-TrainingWebServer
 
-# Set-Alias ~ $home
-#$~ = r\`
-# Install-Module VirtualDesktop
+# ====================================
+# Key Bindings
+# ====================================
+
+# PSReadLine Configurations
 Set-PSReadLineKeyHandler -Chord "Tab" -Function Complete
 Set-PSReadLineKeyHandler -Chord "RightArrow" -Function ForwardWord
 Set-PSReadLineKeyHandler -Chord "LeftArrow" -Function BackwardWord
@@ -23,6 +28,8 @@ Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 Set-PSReadLineOption -PredictionViewStyle ListView
+
+# Custom Key Bindings
 
 # `ForwardChar` accepts the entire suggestion text when the cursor is at the end of the line.
 # This custom binding makes `RightArrow` behave similarly - accepting the next word instead of the entire suggestion text.
@@ -44,44 +51,13 @@ Set-PSReadLineKeyHandler -Key RightArrow `
     }
 }
 
+# ====================================
+# Helper Functions
+# ====================================
 
-# Insert text from the clipboard as a here string
-Set-PSReadLineKeyHandler -Key Ctrl+V `
-    -BriefDescription PasteAsHereString `
-    -LongDescription "Paste the clipboard text as a here string" `
-    -ScriptBlock {
-    param($key, $arg)
-
-    Add-Type -Assembly PresentationCore
-    if ([System.Windows.Clipboard]::ContainsText()) {
-        # Get clipboard text - remove trailing spaces, convert \r\n to \n, and remove the final \n.
-        $text = ([System.Windows.Clipboard]::GetText() -replace "\p{Zs}*`r?`n", "`n").TrimEnd()
-        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("@'`n$text`n'@")
-    }
-    else {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Ding()
-    }
-}
-
-# Check if dnslookup is available
-$dnslookupAvailable = Get-Command dnslookup -ErrorAction SilentlyContinue
-
-# If dnslookup is not available, install it using winget
-if (-Not $dnslookupAvailable) {
-    Write-Host "dnslookup not found. Installing via winget..."
-    winget install ameshkov.dnslookup
-}
-
-# Create an alias for nslookup to dnslookup
-Set-Alias -Name nslookup -Value dnslookup
-
-
-
-# Set-LastCommandNameDynamicAlias: Creates a new alias for the name of the last command executed
+# Dynamic Aliases for Last Command
 function Set-LastCommandNameDynamicAlias {
-
     Set-Alias da $(Get-LastCommandName)
-    
 }
 
 function Get-LastCommandName {
@@ -107,7 +83,23 @@ function Get-ShortCommandName($cmd = $(Get-LastCommandName)) {
     return $scn
 }
 
-function Replace-Text {
+<#
+.SYNOPSIS
+This function updates text content in .txt files.
+
+.DESCRIPTION
+Searches for a specific string in all .txt files in the current directory and replaces it with another string.
+
+.PARAMETER FindString
+The string to find.
+
+.PARAMETER ReplaceString
+The string to replace FindString with.
+
+.EXAMPLE
+Update-TextContent -FindString "findMe" -ReplaceString "replaceWithMe"
+#>
+function Update-TextContent {
     param(
         [string]$FindString,
         [string]$ReplaceString
@@ -127,6 +119,7 @@ function Replace-Text {
     Write-Output "Total changes: $totalChanges"
 }
 
+# Start Training WebServer
 function Start-TrainingWebServer {
     param(
         [string]$directory,
@@ -136,7 +129,7 @@ function Start-TrainingWebServer {
     )
     $processName = "python"
     $webServerProcess = Get-Process -Name $processName -ErrorAction SilentlyContinue | Where-Object {$_.MainWindowTitle -match "http.server"}
-    if ($webServerProcess -ne $null) {
+    if ($null -ne $webServerProcess) {
         $webServerProcess | Stop-Process -Force
     }
     $defaultIndexPagePathFull = "G:\My Drive\!ai\$defaultIndexPage"
@@ -145,14 +138,12 @@ function Start-TrainingWebServer {
     python -m http.server --directory $directory $port
 }
 
-# order PRivacy Laptop filter
-
-New-Alias tws Start-TrainingWebServer
-
-Function venv {
-    Get-ChildItem activate.ps1 -Recurse -Depth 2 | %{$_.FullName} | Invoke-Expression
+# Activate Python Virtual Environment
+function venv {
+    Get-ChildItem activate.ps1 -Recurse -Depth 2 | ForEach-Object{$_.FullName} | Invoke-Expression
 }
 
+# Filter Numbers by Prefix
 function FilterNumbersByPrefix {
     param (
         [Parameter(Mandatory=$true)]
@@ -164,7 +155,6 @@ function FilterNumbersByPrefix {
 
     $PrefixLength = $Prefix.Length
     $FilteredNumbers = @()
-
     foreach ($number in $NumberList) {
         if ($number.Substring(0, $PrefixLength) -eq $Prefix) {
             $FilteredNumbers += $number
@@ -173,30 +163,35 @@ function FilterNumbersByPrefix {
     $FilteredNumbers = $FilteredNumbers | Sort-Object
     return $FilteredNumbers
 }
-# $numbers = @('2487459990', '2487459994', '2487459991', '1234567890', '9876543210')
-# $prefix = '2487'
 
-# $filteredNumbers = FilterNumbersByPrefix -NumberList $numbers -Prefix $prefix
-# $filteredNumbers
-
+# ====================================
+# Initialization
+# ====================================
 
 
-# a function to update the prompt
-# function prompt {
+# Check for dnslookup
+$dnslookupAvailable = Get-Command dnslookup -ErrorAction SilentlyContinue
+if (-Not $dnslookupAvailable) {
+    Write-Host "dnslookup not found. Installing via winget..."
+    winget install ameshkov.dnslookup
+}
 
-#     $short = "[$($PSStyle.Foreground.BrightCyan)$(Get-ShortCommandName)$($PSStyle.Reset)] "
-
-
-#     "PS$short $PWD>"
-# }
-    
-# $PS1 = prompt
-
-# trap DEBUG: Automatically executes the Set-LastCommanNameDynamicAlias and Set-LastCommandLineAlias functions when a command is executed in the console
-#trap { Set-LastCommandNameDynamicAlias } 
-# trap { Set-LastCommandLineAlias } 
 function Invoke-Starship-PreCommand {
     # $host.ui.Write("🚀")
     SPACESHIP_PROMPT_FIRST_PREFIX_SHOW=true
 }
+
+# Starship Prompt Initialization
 Invoke-Expression (&starship init powershell)
+
+# ====================================
+# End of Profile Script
+# ====================================
+
+# ====================================
+# Notes
+# ====================================
+
+# trap DEBUG: Automatically executes the Set-LastCommanNameDynamicAlias and Set-LastCommandLineAlias functions when a command is executed in the console
+# trap { Set-LastCommandNameDynamicAlias } 
+# trap { Set-LastCommandLineAlias } 
