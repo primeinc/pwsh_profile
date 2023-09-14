@@ -39,8 +39,13 @@ if (-Not $pyenvAvailable) {
 }
 
 function Invoke-Starship-PreCommand {
-    # $host.ui.Write("🚀")
+    $result = (Get-WinGetUpdatesCount).Trim()
+    $env:WINGETUPDATESCOUNT = $result
+
+    # $host.ui.Write("🚀 $result")
     SPACESHIP_PROMPT_FIRST_PREFIX_SHOW=true
+    # WINGETUPDATESCOUNT = Get-WinGetUpdatesCount
+    # $env:WINGETUPDATESCOUNT = Get-WinGetUpdatesCount
 }
 
 # Starship Prompt Initialization

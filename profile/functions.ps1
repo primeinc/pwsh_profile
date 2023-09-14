@@ -1,24 +1,26 @@
 function env {
   [CmdletBinding()]
   param (
-      [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-      [string] $specificEnv = ""
+    [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+    [string] $specificEnv = ""
   )
 
   process {
-      if ($specificEnv -ne "") {
-          $specificEnv = $specificEnv.ToUpper()  # Convert the argument to uppercase
-          $envValue = Get-ChildItem "Env:$specificEnv" -ErrorAction SilentlyContinue
+    if ($specificEnv -ne "") {
+      $specificEnv = $specificEnv.ToUpper()  # Convert the argument to uppercase
+      $envValue = Get-ChildItem "Env:$specificEnv" -ErrorAction SilentlyContinue
 
-          if ($envValue) {
-            Write-Output "$($envValue.Name) = $($envValue.Value)"
-          } else {
-              Write-Output "Environment variable '$specificEnv' not found."
-          }
-      } else {
-          # Output all environment variables when no specificEnv is provided
-          Get-ChildItem Env:
+      if ($envValue) {
+        Write-Output "$($envValue.Name) = $($envValue.Value)"
       }
+      else {
+        Write-Output "Environment variable '$specificEnv' not found."
+      }
+    }
+    else {
+      # Output all environment variables when no specificEnv is provided
+      Get-ChildItem Env:
+    }
   }
 }
 
@@ -273,21 +275,24 @@ This command checks if Python is installed and upgrades pip if it's available.
 function Update-Pip {
   # Check if Python is installed
   if (Test-Path (Join-Path $env:ProgramFiles 'Python' 'python.exe')) {
-      try {
-          # Upgrade pip using Python's -m command
-          python -m pip install --upgrade pip
+    try {
+      # Upgrade pip using Python's -m command
+      python -m pip install --upgrade pip
 
-          # Check if the upgrade was successful
-          if ($LASTEXITCODE -eq 0) {
-              Write-Host "pip has been updated successfully."
-          } else {
-              Write-Host "Failed to update pip."
-          }
-      } catch {
-          Write-Host "An error occurred while updating pip: $_"
+      # Check if the upgrade was successful
+      if ($LASTEXITCODE -eq 0) {
+        Write-Host "pip has been updated successfully."
       }
-  } else {
-      Write-Host "Python is not installed. Please install Python before updating pip."
+      else {
+        Write-Host "Failed to update pip."
+      }
+    }
+    catch {
+      Write-Host "An error occurred while updating pip: $_"
+    }
+  }
+  else {
+    Write-Host "Python is not installed. Please install Python before updating pip."
   }
 }
 
@@ -567,7 +572,7 @@ function New-FlatFolder {
   # Create a directory called "flat" if it doesn't exist
   $flatFolder = "flat"
   if (!(Test-Path -Path $flatFolder)) {
-      New-Item -ItemType Directory -Path $flatFolder
+    New-Item -ItemType Directory -Path $flatFolder
   }
 
   # Get a list of all files in the current directory, excluding the "flat" folder
@@ -577,38 +582,38 @@ function New-FlatFolder {
   $fileNames = @{}
 
   foreach ($file in $files) {
-      $fileName = $file.Name
-      $originalName = $fileName
+    $fileName = $file.Name
+    $originalName = $fileName
 
-      # # Check if filename is unique
-      # if ($fileNames.ContainsKey($fileName)) {
-      #     # Prompt the user for an option
-      #     $option = Read-Host "File name '$fileName' is not unique. Choose an option: '(1) cancel' or '(2) continue and rename'"
-      #     if ($option -eq '1') {
-      #         Write-Host "Operation canceled."
-      #         return
-      #     } elseif ($option -eq '2') {
-      #         # Rename the file with the subfolder name
-      #         $subFolder = ($file.DirectoryName -split '\\')[-1]
-      #         $fileName = "$subFolder-$fileName"
-      #     } else {
-      #         Write-Host "Invalid option. Operation canceled."
-      #         return
-      #     }
-      # }
+    # # Check if filename is unique
+    # if ($fileNames.ContainsKey($fileName)) {
+    #     # Prompt the user for an option
+    #     $option = Read-Host "File name '$fileName' is not unique. Choose an option: '(1) cancel' or '(2) continue and rename'"
+    #     if ($option -eq '1') {
+    #         Write-Host "Operation canceled."
+    #         return
+    #     } elseif ($option -eq '2') {
+    #         # Rename the file with the subfolder name
+    #         $subFolder = ($file.DirectoryName -split '\\')[-1]
+    #         $fileName = "$subFolder-$fileName"
+    #     } else {
+    #         Write-Host "Invalid option. Operation canceled."
+    #         return
+    #     }
+    # }
 
-      $subFolder = ($file.DirectoryName -split '\\')[-1]
-      $fileName = "$subFolder-$fileName"
+    $subFolder = ($file.DirectoryName -split '\\')[-1]
+    $fileName = "$subFolder-$fileName"
 
-      # Create a symlink in the "flat" folder
-      $symlinkPath = Join-Path -Path (Resolve-Path $flatFolder) -ChildPath $fileName
-      $command = "cmd /c copy `"$($file.FullName)`" `"$symlinkPath`""
-      Invoke-Expression $command
+    # Create a symlink in the "flat" folder
+    $symlinkPath = Join-Path -Path (Resolve-Path $flatFolder) -ChildPath $fileName
+    $command = "cmd /c copy `"$($file.FullName)`" `"$symlinkPath`""
+    Invoke-Expression $command
 
-      # Add the filename to the hashtable
-      $fileNames[$originalName] = $true
+    # Add the filename to the hashtable
+    $fileNames[$originalName] = $true
 
-      # Write-Host "Created symlink for '$fileName'"
+    # Write-Host "Created symlink for '$fileName'"
 
   }
 }
@@ -913,4 +918,171 @@ function Get-History-Full {
   else {
     Write-Host "History file not found."
   }
+}
+
+# Note:
+#  * Accepts input only via the pipeline, either line by line, 
+#    or as a single, multi-line string.
+#  * The input is assumed to have a header line whose column names
+#    mark the start of each field
+#    * Column names are assumed to be *single words* (must not contain spaces).
+#  * The header line is assumed to be followed by a separator line
+#    (its format doesn't matter).
+function ConvertFrom-FixedColumnTable {
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromPipeline)] [string] $InputObject
+  )
+  
+  begin {
+    Set-StrictMode -Version 1
+    $lineNdx = 0
+  }
+  
+  process {
+    $lines = 
+    if ($InputObject.Contains("`n")) { $InputObject.TrimEnd("`r", "`n") -split '\r?\n' }
+    else { $InputObject }
+    foreach ($line in $lines) {
+      ++$lineNdx
+      if ($lineNdx -eq 1) { 
+        # header line
+        $headerLine = $line 
+      }
+      elseif ($lineNdx -eq 2) { 
+        # separator line
+        # Get the indices where the fields start.
+        $fieldStartIndices = [regex]::Matches($headerLine, '\b\S').Index
+        # Calculate the field lengths.
+        $fieldLengths = foreach ($i in 1..($fieldStartIndices.Count - 1)) { 
+          $fieldStartIndices[$i] - $fieldStartIndices[$i - 1] - 1
+        }
+        # Get the column names
+        $colNames = foreach ($i in 0..($fieldStartIndices.Count - 1)) {
+          if ($i -eq $fieldStartIndices.Count - 1) {
+            $headerLine.Substring($fieldStartIndices[$i]).Trim()
+          }
+          else {
+            $headerLine.Substring($fieldStartIndices[$i], $fieldLengths[$i]).Trim()
+          }
+        } 
+      }
+      else {
+        # data line
+        $oht = [ordered] @{} # ordered helper hashtable for object constructions.
+        $i = 0
+        foreach ($colName in $colNames) {
+          $oht[$colName] = 
+          if ($fieldStartIndices[$i] -lt $line.Length) {
+            if ($fieldLengths[$i] -and $fieldStartIndices[$i] + $fieldLengths[$i] -le $line.Length) {
+              $line.Substring($fieldStartIndices[$i], $fieldLengths[$i]).Trim()
+            }
+            else {
+              $line.Substring($fieldStartIndices[$i]).Trim()
+            }
+          }
+          ++$i
+        }
+        # Convert the helper hashable to an object and output it.
+        [pscustomobject] $oht
+      }
+    }
+  }
+  
+}
+
+function Format-WinGet {
+  [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new() 
+  # Helper function: Convert fixed column widths to objects.
+  (winget list --upgrade-available) -match '^(\p{L}|-)' | ConvertFrom-FixedColumnTable
+}
+
+
+function Get-WinGetUpdates {
+  Format-WinGet | Where-Object {
+      $_.Source -eq 'winget' -and $_.Available -ne ''
+  }
+}
+
+# function Get-WinGetUpdatesCount {
+#   $count = Format-WinGet | Where-Object {
+#       $_.Source -eq 'winget' -and $_.Available -ne ''
+#   }
+#   Write-Host $count.Count
+# }
+
+function Update-WinGetUpdatesCount {
+  $updateCount = (Format-WinGet | Where-Object { $_.Source -eq 'winget' -and $_.Available -ne '' }).Count
+  Set-Content -Path "$home\.cache\winget-updates-count.txt" -Value $updateCount
+}
+
+function Get-WinGetUpdatesCount {
+  param(
+      [Parameter()]
+      [switch]$Force
+  )
+
+  $cacheFile = "$home\.cache\winget-updates-count.txt"
+  $currentTime = Get-Date
+
+  # If -Force is not provided, check the cache file's age
+  if (-not $Force) {
+      # Check if the file exists and is less than 1 hour old
+      if (Test-Path $cacheFile) {
+          $fileTime = (Get-Item $cacheFile).LastWriteTime
+          $timeDifference = $currentTime - $fileTime
+
+          if ($timeDifference.TotalHours -lt 1) {
+              # If the file is less than 1 hour old, read and return the count
+              return (Get-Content $cacheFile)
+          }
+      }
+  }
+
+  # If the file is older than 1 hour, doesn't exist, or -Force is provided, create a background job to update the file
+  Start-Process -NoNewWindow -FilePath "pwsh.exe" -ArgumentList "-command & {Update-WinGetUpdatesCount}"
+
+  # Return the hourglass symbol indicating the job is in progress
+  return ""
+}
+
+function Update-WinGetPackages {
+  param(
+      [Parameter()]
+      [switch]$Interactive,
+
+      [Parameter()]
+      [switch]$Silent
+  )
+
+  # Check for admin privileges
+  $isElevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+  if (-not $isElevated) {
+      Write-Host "This function requires administrator privileges. Please run as an administrator." -ForegroundColor Red
+      return
+  }
+
+  # Get the list of pinned packages
+  $pinnedPackages = winget pin list | Where-Object { $_ -match '^\S+' } | ForEach-Object {
+      ($_ -split '\s+')[1]
+  }
+
+  $wingetSwitches = @()
+  $wingetSwitches += '--verbose'
+  if ($Interactive) { $wingetSwitches += '--interactive' }
+  if ($Silent) { 
+      $wingetSwitches += '--disable-interactivity' 
+      $wingetSwitches += '--silent' 
+  }
+
+  $packagesToUpdate = Get-WinGetUpdates | Where-Object { $_.Id -notin $pinnedPackages }
+  $packagesToUpdate | Format-Table | Write-Output
+
+  foreach ($package in $packagesToUpdate) {
+      Write-Host "Updating $($package.Name) from version $($package.Version) to $($package.Available)"
+      winget upgrade $package.Id $wingetSwitches
+  }
+
+  Write-Host "Packages remaining:"
+  Get-WinGetUpdates | Format-Table
 }
