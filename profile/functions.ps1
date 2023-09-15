@@ -1,3 +1,34 @@
+$global:timerPoints = @()
+
+function Initialize-Timer {
+  $global:timerPoints = @(Get-Date)
+  Write-Output "Timer initialized."
+}
+
+function Show-Timer {
+  if ($global:timerPoints.Count -eq 0) {
+    Write-Output "Timer not started, use Initialize-Timer to start it."
+    return
+  }
+    
+  $currentPoint = Get-Date
+  $initialTime = $global:timerPoints[0]
+  $lastPoint = $global:timerPoints[-1]
+
+  $elapsedFromStart = $currentPoint - $initialTime
+  $elapsedFromLast = $currentPoint - $lastPoint
+
+  $global:timerPoints += $currentPoint
+
+  Write-Output "Time since initialization: $($elapsedFromStart.TotalSeconds) seconds."
+  Write-Output "Time since last check: $($elapsedFromLast.TotalSeconds) seconds."
+}
+
+function Stop-Timer {
+  $global:timerPoints = @()
+  Write-Output "Timer stopped and reset."
+}
+
 function env {
   [CmdletBinding()]
   param (
@@ -9,8 +40,14 @@ function env {
     if ($specificEnv -ne "") {
       $specificEnv = $specificEnv.ToUpper()  # Convert the argument to uppercase
       $envValue = Get-ChildItem "Env:$specificEnv" -ErrorAction SilentlyContinue
-
+      
       if ($envValue) {
+        if ($specificEnv = "PATH") {
+          Write-Output "Paths:"
+          $paths = $envValue.Value -split ";" | ForEach-Object { $_.Trim() }
+          $paths | ForEach-Object { Write-Output "`e]8;;$_`e`\`e[1;36m$(Show-ClickablePath($_))`e[0m`e]8;;`e`\" }
+          return
+        }
         Write-Output "$($envValue.Name) = $($envValue.Value)"
       }
       else {
@@ -545,8 +582,41 @@ This command searches for and removes empty directories starting from the curren
 
 #>
 function Remove-EmptyDirs {
-  Get-ChildItem -Path . -Recurse -Directory | Where-Object { @(Get-ChildItem -Path ([WildcardPattern]::Escape($_.FullName)) -Force).Count -eq 0 } | Remove-Item -Force
-  Write-Host "Empty directories removed successfully."
+  [CmdletBinding(
+    SupportsShouldProcess,
+    ConfirmImpact = 'High'
+  )]
+  param(
+    [Switch]$Force
+  )
+
+  if ($Force -and -not $Confirm) {
+    $ConfirmPreference = 'None'
+  }
+
+  $emptyDirs = [System.Collections.Generic.List[String]]@()
+  $rootPath = (Get-Location).Path
+
+  function Test-IsEmpty($dir) {
+    $items = [System.IO.Directory]::GetFileSystemEntries($dir, "*", [System.IO.SearchOption]::TopDirectoryOnly)
+    return ($items.Length -eq 0)
+  }
+
+  Get-ChildItem -Path $rootPath -Recurse -Directory | ForEach-Object {
+    if (Test-IsEmpty $_.FullName) {
+      $emptyDirs.Add($_.FullName)
+    }
+  }
+
+  foreach ($dir in $emptyDirs) {
+    if ($PSCmdlet.ShouldProcess("$(Show-ClickablePath($dir))", $dir, "Remove directory")) {
+      Remove-Item -Path $dir -Force
+      Write-Host "Removed directory: $($dir)"
+    }
+  }
+  Write-Output "Empty directories found: $($emptyDirs.Count)"
+
+  Write-Host "Operation completed."
 }
 
 <#
@@ -1000,7 +1070,7 @@ function Format-WinGet {
 
 function Get-WinGetUpdates {
   Format-WinGet | Where-Object {
-      $_.Source -eq 'winget' -and $_.Available -ne ''
+    $_.Source -eq 'winget' -and $_.Available -ne ''
   }
 }
 
@@ -1018,8 +1088,8 @@ function Update-WinGetUpdatesCount {
 
 function Get-WinGetUpdatesCount {
   param(
-      [Parameter()]
-      [switch]$Force
+    [Parameter()]
+    [switch]$Force
   )
 
   $cacheFile = "$home\.cache\winget-updates-count.txt"
@@ -1027,16 +1097,16 @@ function Get-WinGetUpdatesCount {
 
   # If -Force is not provided, check the cache file's age
   if (-not $Force) {
-      # Check if the file exists and is less than 1 hour old
-      if (Test-Path $cacheFile) {
-          $fileTime = (Get-Item $cacheFile).LastWriteTime
-          $timeDifference = $currentTime - $fileTime
+    # Check if the file exists and is less than 1 hour old
+    if (Test-Path $cacheFile) {
+      $fileTime = (Get-Item $cacheFile).LastWriteTime
+      $timeDifference = $currentTime - $fileTime
 
-          if ($timeDifference.TotalHours -lt 1) {
-              # If the file is less than 1 hour old, read and return the count
-              return (Get-Content $cacheFile)
-          }
+      if ($timeDifference.TotalHours -lt 1) {
+        # If the file is less than 1 hour old, read and return the count
+        return (Get-Content $cacheFile)
       }
+    }
   }
 
   # If the file is older than 1 hour, doesn't exist, or -Force is provided, create a background job to update the file
@@ -1048,18 +1118,18 @@ function Get-WinGetUpdatesCount {
 
 function Update-WinGetPackages {
   param(
-      [Parameter()]
-      [switch]$Interactive,
+    [Parameter()]
+    [switch]$Interactive,
 
-      [Parameter()]
-      [switch]$Silent
+    [Parameter()]
+    [switch]$Silent
   )
 
   # Check for admin privileges
   $isElevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
   if (-not $isElevated) {
-      Write-Host "This function requires administrator privileges. Please run as an administrator." -ForegroundColor Red
-      return
+    Write-Host "This function requires administrator privileges. Please run as an administrator." -ForegroundColor Red
+    return
   }
 
   # Get the list of pinned packages
@@ -1071,18 +1141,59 @@ function Update-WinGetPackages {
   $wingetSwitches += '--verbose'
   if ($Interactive) { $wingetSwitches += '--interactive' }
   if ($Silent) { 
-      $wingetSwitches += '--disable-interactivity' 
-      $wingetSwitches += '--silent' 
+    $wingetSwitches += '--disable-interactivity' 
+    $wingetSwitches += '--silent' 
   }
 
   $packagesToUpdate = Get-WinGetUpdates | Where-Object { $_.Id -notin $pinnedPackages }
   $packagesToUpdate | Format-Table | Write-Output
 
   foreach ($package in $packagesToUpdate) {
-      Write-Host "Updating $($package.Name) from version $($package.Version) to $($package.Available)"
-      winget upgrade $package.Id $wingetSwitches
+    Write-Host "Updating $($package.Name) from version $($package.Version) to $($package.Available)"
+    winget upgrade $package.Id $wingetSwitches
   }
 
   Write-Host "Packages remaining:"
   Get-WinGetUpdates | Format-Table
+}
+
+<#
+.SYNOPSIS
+Generates a clickable display string for a given path, optionally displaying only the leaf.
+
+.DESCRIPTION
+The Show-ClickablePath function takes a path and generates a terminal hyperlink to that path. 
+The displayed text can be either the full path or just the leaf (e.g., the file or folder name), 
+highlighted in bright cyan. 
+
+.PARAMETER Path
+The full path that you want to generate a clickable display string for.
+
+.PARAMETER UseLeaf
+A switch to determine if only the leaf of the path (e.g., the file or folder name) should be displayed. 
+By default, it's set to $false, meaning the full path will be shown.
+
+.EXAMPLE
+Show-ClickablePath -Path "C:\Users\Admin"
+This will generate a string that's a terminal hyperlink to "C:\Users\Admin" with the same path displayed in bright cyan.
+
+.EXAMPLE
+Show-ClickablePath -Path "C:\Users\Admin" -UseLeaf $true
+This will generate a string that's a terminal hyperlink to "C:\Users\Admin", but only "Admin" will be displayed in bright cyan.
+#>
+
+function Show-ClickablePath {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+
+    [Parameter(Mandatory = $false)]
+    [bool]$UseLeaf = $false
+  )
+
+  $displayPath = if ($UseLeaf) { Split-Path $Path -Leaf } else { $Path }
+
+
+  return "`e]8;;$Path`e`\`e[1;36m$displayPath`e[0m`e]8;;`e`\"
+
 }
