@@ -1197,3 +1197,42 @@ function Show-ClickablePath {
   return "`e]8;;$Path`e`\`e[1;36m$displayPath`e[0m`e]8;;`e`\"
 
 }
+
+function Install-Configs {
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+  param(
+    [Switch]$Force
+  )
+
+  # Override the confirmation preference if Force is specified
+  $ConfirmPreference = if ($Force -and -not $Confirm) { 'None' } else { $ConfirmPreference }
+
+  # Load the JSON configuration
+  $configDir = Join-Path -Path (Split-Path -Parent $PROFILE) -ChildPath "configs"
+  $configs = Get-Content -Path (Join-Path -Path $configDir -ChildPath "config.json") | ConvertFrom-Json
+
+  foreach ($item in $configs) {
+    $sourcePath = Join-Path -Path $configDir -ChildPath $item.source
+    $destinationPath = Resolve-Path $item.destination
+    
+    Write-Output "Create Symlink for config`nsource: $(Show-ClickablePath $sourcePath $true)`ndestination: $(Show-ClickablePath $destinationPath)`n"
+    Write-Output "Checking for existing destination file"
+
+    if (Test-Path $destinationPath) {
+      if ($PSCmdlet.ShouldProcess("$destinationPath", "Change extension to .bak")) {
+      
+        Rename-Item -Path $destinationPath -NewName "$destinationPath.bak"
+        Write-Output "Renamed existing item to:`n$(Show-ClickablePath "$destinationPath.bak")`n"
+
+      }
+      else {
+        Write-Output "Operation canceled.`n"
+        continue
+      }
+    }
+    New-Item -ItemType SymbolicLink -Path $destinationPath -Target $sourcePath
+    Write-Output "Created symlink: $destinationPath -> $sourcePath`n"
+
+  }
+
+}

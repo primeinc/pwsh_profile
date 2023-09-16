@@ -1,0 +1,6 @@
+[
+  {
+    "source": "starship.toml",
+    "destination": "~/.config/starship.toml"
+  }
+]
