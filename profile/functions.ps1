@@ -1216,8 +1216,19 @@ function Install-Configs {
     $destinationPath = Resolve-Path $item.destination
     
     Write-Output "Create Symlink for config`nsource: $(Show-ClickablePath $sourcePath $true)`ndestination: $(Show-ClickablePath $destinationPath)`n"
-    Write-Output "Checking for existing destination file"
+    Write-Output "Checking for existing destination file..."
 
+    if (Test-Path $destinationPath -PathType Leaf) {
+      $itemAttributes = (Get-Item -Path $destinationPath).Attributes
+      if ($itemAttributes -band [System.IO.FileAttributes]::ReparsePoint) {
+        $existingLinkTarget = Get-Item -Path $destinationPath | ForEach-Object { $_.Target }
+        if ($existingLinkTarget -eq $sourcePath) {
+          Write-Output "Symbolic link already exists and points to the correct location. Skipping...`n"
+          continue
+        }
+      }
+    }  
+    
     if (Test-Path $destinationPath) {
       if ($PSCmdlet.ShouldProcess("$destinationPath", "Change extension to .bak")) {
       
