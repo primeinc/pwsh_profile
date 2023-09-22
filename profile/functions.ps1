@@ -1212,11 +1212,18 @@ function Install-Configs {
   $configs = Get-Content -Path (Join-Path -Path $configDir -ChildPath "config.json") | ConvertFrom-Json
 
   foreach ($item in $configs) {
-    $sourcePath = Join-Path -Path $configDir -ChildPath $item.source
-    $destinationPath = Resolve-Path $item.destination
-    
+    $sourcePath = Join-Path -Path $configDir -ChildPath $item.source    
+    # Check if the destination path exists before attempting to resolve it
+    if (Test-Path $item.destination) {
+      $destinationPath = Resolve-Path $item.destination
+    }
+    else {
+      $destinationPath = $item.destination
+    }
+
     Write-Output "Create Symlink for config`nsource: $(Show-ClickablePath $sourcePath $true)`ndestination: $(Show-ClickablePath $destinationPath)`n"
     Write-Output "Checking for existing destination file..."
+
 
     if (Test-Path $destinationPath -PathType Leaf) {
       $itemAttributes = (Get-Item -Path $destinationPath).Attributes
@@ -1230,17 +1237,27 @@ function Install-Configs {
     }  
     
     if (Test-Path $destinationPath) {
-      if ($PSCmdlet.ShouldProcess("$destinationPath", "Change extension to .bak")) {
-      
-        Rename-Item -Path $destinationPath -NewName "$destinationPath.bak"
-        Write-Output "Renamed existing item to:`n$(Show-ClickablePath "$destinationPath.bak")`n"
-
+      # Extracting the current filename and extension
+      $currentFileName = [System.IO.Path]::GetFileNameWithoutExtension($destinationPath)
+      $currentExt = [System.IO.Path]::GetExtension($destinationPath)
+    
+      # Generating the new filename with the datetime format
+      $dateTime = Get-Date -Format "yyyyMMddHHmmss"
+      $backupName = "$currentFileName.$dateTime$currentExt"
+    
+      # Creating the full path for the backup file
+      $backupPath = Join-Path -Path (Split-Path -Parent $destinationPath) -ChildPath $backupName
+    
+      if ($PSCmdlet.ShouldProcess("$destinationPath", "Rename to $backupName")) {
+        Rename-Item -Path $destinationPath -NewName $backupPath
+        Write-Output "Renamed existing item to:`n$(Show-ClickablePath "$backupPath")`n"
       }
       else {
         Write-Output "Operation canceled.`n"
         continue
       }
     }
+    
     New-Item -ItemType SymbolicLink -Path $destinationPath -Target $sourcePath
     Write-Output "Created symlink: $destinationPath -> $sourcePath`n"
 
