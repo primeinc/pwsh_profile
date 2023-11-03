@@ -1073,21 +1073,20 @@ function Get-WinGetUpdates {
     $_.Source -eq 'winget' -and $_.Available -ne ''
   }
 }
-
-# function Get-WinGetUpdatesCount {
-#   $count = Format-WinGet | Where-Object {
-#       $_.Source -eq 'winget' -and $_.Available -ne ''
-#   }
-#   Write-Host $count.Count
-# }
-
 function Update-WinGetUpdatesCount {
-  $updateCount = (Format-WinGet | Where-Object { $_.Source -eq 'winget' -and $_.Available -ne '' }).Count
+  param (
+    [Parameter()]
+    $Updates
+  )
+  if (-not $Updates) {
+    $Updates = Get-WinGetUpdates
+  }
+  $updateCount = $Updates.Count
   Set-Content -Path "$home\.cache\winget-updates-count.txt" -Value $updateCount
 }
 
 function Get-WinGetUpdatesCount {
-  param(
+  param (
     [Parameter()]
     [switch]$Force
   )
@@ -1095,29 +1094,23 @@ function Get-WinGetUpdatesCount {
   $cacheFile = "$home\.cache\winget-updates-count.txt"
   $currentTime = Get-Date
 
-  # If -Force is not provided, check the cache file's age
   if (-not $Force) {
-    # Check if the file exists and is less than 1 hour old
     if (Test-Path $cacheFile) {
       $fileTime = (Get-Item $cacheFile).LastWriteTime
       $timeDifference = $currentTime - $fileTime
-
       if ($timeDifference.TotalHours -lt 1) {
-        # If the file is less than 1 hour old, read and return the count
         return (Get-Content $cacheFile)
       }
     }
   }
 
-  # If the file is older than 1 hour, doesn't exist, or -Force is provided, create a background job to update the file
+  # Trigger background job to update the cache
   Start-Process -NoNewWindow -FilePath "pwsh.exe" -ArgumentList "-command & {Update-WinGetUpdatesCount}"
-
-  # Return the hourglass symbol indicating the job is in progress
   return ""
 }
 
 function Update-WinGetPackages {
-  param(
+  param (
     [Parameter()]
     [switch]$Interactive,
 
@@ -1125,14 +1118,12 @@ function Update-WinGetPackages {
     [switch]$Silent
   )
 
-  # Check for admin privileges
-  $isElevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
-  if (-not $isElevated) {
-    Write-Host "This function requires administrator privileges. Please run as an administrator." -ForegroundColor Red
-    return
-  }
+  # Fetch the updates once and reuse
+  $updates = Get-WinGetUpdates
+  $updates | Format-Table | Write-Output
+  Update-WinGetUpdatesCount -Updates $updates
 
-  # Get the list of pinned packages
+  # Get pinned packages
   $pinnedPackages = winget pin list | Where-Object { $_ -match '^\S+' } | ForEach-Object {
       ($_ -split '\s+')[1]
   }
@@ -1145,8 +1136,7 @@ function Update-WinGetPackages {
     $wingetSwitches += '--silent' 
   }
 
-  $packagesToUpdate = Get-WinGetUpdates | Where-Object { $_.Id -notin $pinnedPackages }
-  $packagesToUpdate | Format-Table | Write-Output
+  $packagesToUpdate = $updates | Where-Object { $_.Id -notin $pinnedPackages }
 
   foreach ($package in $packagesToUpdate) {
     Write-Host "Updating $($package.Name) from version $($package.Version) to $($package.Available)"
@@ -1154,8 +1144,11 @@ function Update-WinGetPackages {
   }
 
   Write-Host "Packages remaining:"
-  Get-WinGetUpdates | Format-Table
+  $remainingUpdates = Get-WinGetUpdates
+  $remainingUpdates | Format-Table
+  Update-WinGetUpdatesCount -Updates $remainingUpdates
 }
+
 
 <#
 .SYNOPSIS
@@ -1263,4 +1256,12 @@ function Install-Configs {
 
   }
 
+}
+
+function reboot {
+  sudo pwsh -Command 'Suspend-BitLocker -MountPoint "C:" -Confirm:$false'
+  sudo pwsh -File "C:\Users\will\Documents\PowerShell\Scripts\DismountVHDDrives.ps1"
+  # maybe add the logoff script here?
+  # also maybe reboot?
+  shutdown /r /t 10
 }
