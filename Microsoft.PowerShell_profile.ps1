@@ -38,6 +38,9 @@ if (-Not $pyenvAvailable) {
     Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
 }
 
+git config --global core.autocrlf input
+git config --global core.eol lf
+
 function Invoke-Starship-PreCommand {
     $result = (Get-WinGetUpdatesCount).Trim()
     $env:WINGETUPDATESCOUNT = $result
