@@ -2,7 +2,6 @@
 memory=20G
 [experimental]
 autoMemoryReclaim=gradual
-spareVhd=true
 networkingMode=mirrored
 dnsTunneling=true
 firewall=true

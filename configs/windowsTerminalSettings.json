@@ -4,6 +4,15 @@
     "actions": 
     [
         {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "auto",
+                "splitMode": "duplicate"
+            },
+            "keys": "alt+shift+d"
+        },
+        {
             "command": "find",
             "keys": "ctrl+shift+f"
         },
@@ -26,15 +35,6 @@
                 "singleLine": false
             },
             "keys": "ctrl+c"
-        },
-        {
-            "command": 
-            {
-                "action": "splitPane",
-                "split": "auto",
-                "splitMode": "duplicate"
-            },
-            "keys": "alt+shift+d"
         }
     ],
     "alwaysOnTop": false,
@@ -115,51 +115,21 @@
                 "name": "Windows PowerShell"
             },
             {
-                "guid": "{c2c4ad8e-d8e5-5bd3-b185-fec9e5437778}",
-                "hidden": false,
-                "name": "Developer Command Prompt for VS 2022",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "guid": "{719dbb21-fa1f-5d7a-92e7-17e14f741905}",
-                "hidden": false,
-                "name": "Developer PowerShell for VS 2022",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "guid": "{f9ace765-8ee5-5f93-96ca-7eace7619667}",
-                "hidden": false,
-                "name": "Developer Command Prompt for VS 2022 (2)",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "guid": "{bc2abf68-241d-5cfb-9f65-d1383ad31c41}",
-                "hidden": false,
-                "name": "Developer PowerShell for VS 2022 (2)",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
                 "guid": "{16208362-94fc-5b1f-a491-5b2624d5ab56}",
                 "hidden": true,
                 "name": "Visual Studio Debug Console",
                 "source": "VSDebugConsole"
             },
             {
-                "guid": "{bbbe75d3-9534-513e-a841-372610562b2f}",
-                "hidden": true,
-                "name": "Developer Command Prompt for VS 2019",
+                "guid": "{34a6b25e-466a-58d3-ba09-d3bd67314503}",
+                "hidden": false,
+                "name": "Developer Command Prompt for VS 2022 (2)",
                 "source": "Windows.Terminal.VisualStudio"
             },
             {
-                "guid": "{e1e3a75a-bc38-56c0-bec8-03372de6f4bf}",
-                "hidden": true,
-                "name": "Developer PowerShell for VS 2019",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "guid": "{f6ff2c50-fecd-5d6e-b544-a8eb9dfd8c66}",
-                "hidden": true,
-                "name": "Developer Command Prompt for VS 2017",
+                "guid": "{61c1d9a0-4f07-5460-9bf4-08185930a213}",
+                "hidden": false,
+                "name": "Developer PowerShell for VS 2022 (2)",
                 "source": "Windows.Terminal.VisualStudio"
             }
         ]
@@ -422,50 +392,6 @@
     ],
     "startOnUserLogin": true,
     "tabWidthMode": "titleLength",
-    "themes": 
-    [
-        {
-            "name": "legacyDark",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "dark",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacyLight",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "light",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacySystem",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "system",
-                "useMica": false
-            }
-        }
-    ],
+    "themes": [],
     "useAcrylicInTabRow": false
 }

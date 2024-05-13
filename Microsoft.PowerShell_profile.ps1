@@ -40,6 +40,9 @@ if (-Not $pyenvAvailable) {
 
 git config --global core.autocrlf input
 git config --global core.eol lf
+git config --global user.email "4395149+primeinc@users.noreply.github.com"
+git config --global user.name "primeinc"
+git config --global --add safe.directory C:/Users/will/Documents/PowerShell
 
 function Invoke-Starship-PreCommand {
     $result = (Get-WinGetUpdatesCount).Trim()
